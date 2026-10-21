@@ -1,0 +1,7 @@
+public int[] getSubarrayBeauty(int[] nums, int k,int x){
+    int n=nums.length;
+    int freqar[]=new int[102];
+    for(left=0,right=0;right<n;right++){
+        
+    }
+}

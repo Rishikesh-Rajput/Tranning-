@@ -1,0 +1,58 @@
+import java.util.*;
+
+class Node
+{
+	int data;
+	Node next;
+	Node(int val)
+	{
+		this.data = val;
+		this.next = null;
+	}
+}
+
+class LinkedList
+{
+	Node Head;
+	Node createNode(int val)
+	{
+		Node newNode = new Node(val);
+		return newNode;
+	}
+
+	void insertFirst(int val)
+	{
+		Node newNode = createNode(val);
+		if(Head == null)
+		{
+			Head = newNode;
+			return;
+		}
+		
+		newNode.next = Head;
+		Head = newNode;
+	}
+
+  Node deleteFirst(int val)
+  {
+    if(Head == null)
+    {
+      return null;
+    }
+    Node temp = Head;
+    Head = Head.next;
+    temp.next = null;
+    return temp;
+  }
+}
+
+public class Main
+{
+	public static void main(String[] args)
+	{
+    LinkedList list = new LinkedList();
+    list.insertFirst(10);
+    list.insertFirst(20);
+
+  }
+}

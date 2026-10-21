@@ -1,0 +1,71 @@
+const express=require('express');
+const cookieParser=require('cookie-Parser');
+const session=require('express-session');
+const app=express();
+const PORT=4000;
+//Middleware
+app.use(cookieParser());
+app.use(session({
+    secret: 'supersecretkey123',
+    resave: false,
+    saveUninitialized: true,
+    cookie:{ maxAge: 1000 * 60 * 5}
+}));
+//Routes
+//Home route
+app.get('/',(req,res)=> {
+  // ----COOKIES ----
+  let cookieVists=parseInt(req.cookies.vists || '0')+1;
+  res.cookie('vists',cookieVists,{maxAge:1000 * 60 * 60,httpOnly:true})
+
+  // ------SESSION------
+  if(!req.session.history)
+  {
+    req.session.history=[];
+  }
+  req.session.history.push(req.originalUrl);
+  //-----RESPONSE-----
+res.send(`
+    <h1>Node.js Session Tracking Demo</h1>
+    
+<h2>Using cookies</h2>
+<p>You have visited this site <b>${cookieVists}</b> times (tracked via <em>client-side cookies</em>.</p>)
+
+<h2>Using HTTP Session</h2>
+<p>Your unique session ID:<b>${req.sessionID}</b></p>
+<h3>Visited URLs (server-side history):</h3>
+<ul>${req.session.history.map(url=> '<li>${url}</li>').join('')}</ul>
+
+<h3>Try visiting</h3>
+<ul>
+  <li><a href="/about">/about</a></li>
+  <li><a href="/contact">/contact</a></li>
+  <li><a href="/reset">/reset (clear session & cookies)</a></li>
+</ul>
+`);
+});
+
+//about page
+app.get('/about',(req,res)=> {
+    req.session.history.push('/about');
+    res.redirect('/');
+});
+//contact page
+app.get('/contact',(req,res)=> {
+    req.session.history.push('/contact');
+    res.redirect('/');
+});
+//Reset cookies and session
+app.get('/reset',(req,res)=>
+{
+    res.clearCookie('visits');
+    req.session.destroy(()=>{
+        res.send(`<h2>Session and cookies cleared</h2><a href="/">Back Home</a>`);
+    });
+});
+//START SERVER
+app.listen(PORT,()=>{
+    console.log(`Server running at http://localhost:${PORT}`);
+});
+
+
